@@ -9,6 +9,13 @@ const typeDefs = gql`
         nombre: String
         id: ID
     }
+    
+    type Producto {
+        id: ID
+        nombre: String!
+        perteneceA: String!
+        foto: String!
+    }
 
     type Emprendimiento {
         nombre: String!
@@ -27,11 +34,18 @@ const typeDefs = gql`
         obtenerCategorias : [Categoria]
 
         obtenerEmprendimientos(input: CategoIDInput) : [Emprendimiento]
+
+        obtenerProductos(input: EmprendiIDInput) : [Producto]
     }
 
     input CategoIDInput {
         categoria: String!
     }
+
+    input EmprendiIDInput {
+        perteneceA: String!
+    }
+
     
     input UsarioInput{
         nombre: String!
@@ -46,6 +60,12 @@ const typeDefs = gql`
 
     input CategoriaInput {
         nombre: String!
+    }
+
+    input ProductoInput {
+        nombre: String!
+        perteneceA: String!
+        foto: String!
     }
 
     input EmprendimientoInput {
@@ -71,6 +91,10 @@ const typeDefs = gql`
         nuevoEmprendimiento(input: EmprendimientoInput) : Emprendimiento
         editarEmprendimiento(id : ID!, input: EmprendimientoInput) : Emprendimiento
         eliminarEmprendimiento(id : ID!) : String
+
+        nuevoProducto(input: ProductoInput) : Producto
+        editarProducto(id : ID!, input: ProductoInput) : Producto
+        eliminarProducto(id : ID!) : String
     }
 `;
 
