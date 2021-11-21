@@ -3,6 +3,7 @@ const Categoria = require('../models/Categoria');
 const Emprendimiento = require('../models/Emprendimiento');
 const bcryptjs = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const Producto = require('../models/Producto');
 require('dotenv').config({ path: 'variables.env'});
 
 //crea y firma un webToken
@@ -23,6 +24,12 @@ const resolvers = {
             const emprendimientos = await Emprendimiento.where('categoria').equals(input.categoria);
 
             return emprendimientos;
+        },
+
+        obtenerProductos: async (_, {input}) => {
+            const productos = await Producto.where('perteneceA').equals(input.perteneceA);
+
+            return productos;
         }
        
     },
@@ -169,7 +176,7 @@ const resolvers = {
                 throw new Error('La Cédula Jurídica ya esiste');
             }*/
 
-            //Guardar y retornar tarea
+            //Guardar y retornar emprendimiento
             emprendimiento = await Emprendimiento.findOneAndUpdate({_id : id}, input, { new: true});
 
             return emprendimiento;
@@ -185,7 +192,46 @@ const resolvers = {
             //Eliminar
             await Emprendimiento.findOneAndDelete({ _id: id});
             return "Emprendimiento eliminado";
-        } 
+        },
+        nuevoProducto: async (_, {input}) => {
+              //Revisar si el nombre del emprendimiento ya existe ????????'
+            
+
+            try {
+                const producto = new Producto(input);
+
+                //Almacenar en la BD
+                const resultado = await producto.save();
+
+                return resultado;
+            } catch (error) {
+                console.log(error);
+            }
+        },
+        editarProducto: async (_, { id, input }) => {
+            //Verificar que el producto exista
+            let producto = Producto.findById(id);
+
+            if (!producto) {
+                throw new Error('El producto que busca no existe')
+            }
+            //Guardar y retornar producto
+            producto = await Producto.findOneAndUpdate({_id : id}, input, { new: true});
+
+            return producto;
+        },
+        eliminarProducto: async (_, { id } ) => {
+            //revisar si el emprendimiento existe
+            let producto = await Producto.findById( id );
+
+            if (!producto) {
+                throw new Error('El producto no existe');
+            }
+
+            //Eliminar
+            await Producto.findOneAndDelete({ _id: id});
+            return "Producto eliminado";
+        }
     }
 }
 
