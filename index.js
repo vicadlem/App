@@ -1,16 +1,33 @@
-const  { ApolloServer } = require('apollo-server');
+import express from 'express'
+import config from '@config'
 
-require('dotenv').config('variables.env')
-const typeDefs = require('./db/schema');
-const resolvers = require('./db/resolvers');
+class Server {
+  app
 
-const conectarDB = require('./config/db');
+  constructor() {
+    this.app = express()
+  }
 
-//conectar a la BD
-conectarDB();
+  initServer () {
+    new Promise(resolve => {
+      resolve(require('@loaders').default({ expressApp: this.app }))
+    }).then(() => {
+      this._startServer(this.app)
+    }).catch((err) => {
+      console.log('Error init server:', err)
+    })
+  }
 
-const server = new ApolloServer({typeDefs, resolvers});
+  _startServer(app) {
+    app.listen(config.port, () => {
+      console.log(`
+      ################################################
+      🛡️  Server listening on port: ${config.port} 🛡️
+      🌐 http://localhost:${config.port}
+      ################################################
+    `)
+    })
+  }
+}
 
-server.listen().then( ({url}) => {
-    console.log(`Servidor listo en la URL ${url}`);
-} )
+new Server().initServer()
